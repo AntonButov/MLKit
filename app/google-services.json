@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "630287825283",
+    "firebase_url": "https://mlkit-d7731.firebaseio.com",
+    "project_id": "mlkit-d7731",
+    "storage_bucket": "mlkit-d7731.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630287825283:android:320fef4ee708bcf7b21eb6",
+        "android_client_info": {
+          "package_name": "pro.butovanton.mlkit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "630287825283-snhjrm09l0fdkdikeh6nv6bo8mnfe1ol.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCM8rUuZWPve0kZGhg_nAdWHHIkkPCbLN4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "630287825283-snhjrm09l0fdkdikeh6nv6bo8mnfe1ol.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
