@@ -9,8 +9,13 @@ import android.widget.ImageView;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -26,7 +31,8 @@ public class Tests {
     private Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
     @Test
-    public void getImageFace() {
+    public void getImageFace() throws InterruptedException {
+        CountDownLatch count = new CountDownLatch(1);
         Resources resources = appContext.getResources();
         Uri uri = new Uri.Builder()
                 .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
@@ -34,6 +40,9 @@ public class Tests {
                 .appendPath(resources.getResourceTypeName(R.drawable.nord))
                 .appendPath(resources.getResourceEntryName(R.drawable.nord))
                 .build();
-        fireBaseVision.imageFromUri(appContext, uri);
+        FirebaseVisionImage image = fireBaseVision.imageFromUri(appContext, uri);
+        fireBaseVision.detecting(image);
+        count.await(3, TimeUnit.MINUTES);
     }
+
 }

@@ -54,6 +54,7 @@ public class FireBaseVision {
                             @Override
                             public void onSuccess(List<FirebaseVisionFace> faces) {
                                 firebaseVisionFace.setValue(faces);
+
                             }
                         })
                 .addOnFailureListener(
