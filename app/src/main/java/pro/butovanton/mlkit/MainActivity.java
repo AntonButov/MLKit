@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
             }
             myCameras[CAMERA1] = new CameraService(mCameraManager, "0", mTextureView);
 
+            myCameras[CAMERA1].
+
+
         } catch (CameraAccessException e) {
             Log.e("DEBUG", e.getMessage());
             e.printStackTrace();
@@ -70,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_REQUEST_CODE_FOR_CAMERA);
             }
-            openCamera();
         }
+        openCamera();
     }
 
         @Override

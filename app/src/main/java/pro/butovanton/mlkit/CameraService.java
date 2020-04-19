@@ -51,7 +51,8 @@ public class CameraService {
     };
 
     private void createCameraPreviewSession() {
-   mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+        if(mTextureView.isAvailable()) setSurface();
+        else mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
        @Override
        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
            setSurface();
@@ -69,14 +70,14 @@ public class CameraService {
 
        @Override
        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
+           Log.d("DEBUG", "texture change");
        }
    });
 
     }
 
 
-       void setSurface() {
+      private void setSurface() {
             Surface surface = new Surface(mTextureView.getSurfaceTexture());
             try {
                 final CaptureRequest.Builder builder =
@@ -102,7 +103,6 @@ public class CameraService {
                 e.printStackTrace();
             }
         }
-
 
 
     public boolean isOpen() {
@@ -132,6 +132,7 @@ public class CameraService {
             mCameraDevice.close();
             mCameraDevice = null;
         }
+
     }
 
 }
