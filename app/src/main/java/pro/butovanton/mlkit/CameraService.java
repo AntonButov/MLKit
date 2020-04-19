@@ -29,17 +29,17 @@ public class CameraService {
     private CameraCaptureSession mCaptureSession;
     private CameraManager mCameraManager;
     private TextureView mTextureView;
-    private FireBaseVision fireBaseVision;
+ //   private FireBaseVision fireBaseVision;
     private enum Process { WAIT , DETECTING }
-    private Process process;
+//    private Process process;
     private MutableLiveData<List<FirebaseVisionFace>> faces = new MutableLiveData<>();
 
     public CameraService(CameraManager cameraManager, String cameraID, TextureView textureVew) {
         mCameraManager = cameraManager;
         mCameraID = cameraID;
         mTextureView = textureVew;
-        fireBaseVision = new FireBaseVision();
-        process = Process.WAIT;
+   //     fireBaseVision = new FireBaseVision();
+  //      process = Process.WAIT;
     }
 
     private CameraDevice.StateCallback mCameraCallback = new CameraDevice.StateCallback() {
@@ -88,16 +88,17 @@ public class CameraService {
        @Override
        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
  //          Log.d("DEBUG", "texture change");
-           if (process == Process.WAIT) {
-               fireBaseVision.detecting(fireBaseVision.imageFromBitmap(mTextureView.getBitmap())).observeForever(new Observer<List<FirebaseVisionFace>>() {
-                   @Override
-                   public void onChanged(List<FirebaseVisionFace> firebaseVisionFaces) {
-                       faces.setValue(firebaseVisionFaces);
-                       process = Process.WAIT;
-                   }
-               });
-               process = Process.DETECTING;
-           }
+      //     if (process == Process.WAIT) {
+    //           process = Process.DETECTING;
+  //             fireBaseVision.detecting(fireBaseVision.imageFromBitmap(mTextureView.getBitmap())).observeForever(new Observer<List<FirebaseVisionFace>>() {
+  //                 @Override
+   //                public void onChanged(List<FirebaseVisionFace> firebaseVisionFaces) {
+ //                      faces.postValue(firebaseVisionFaces);
+ //                      process = Process.WAIT;
+  //                 }
+    //           });
+
+ //          }
        }
    });
     }

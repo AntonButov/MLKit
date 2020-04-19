@@ -15,8 +15,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.TextureView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -38,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private final int CAMERA1 = 0;
     private final int CAMERA2 = 1;
     private TextureView mTextureView = null;
+    private TextView textView;
+    private Button button;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +64,25 @@ public class MainActivity extends AppCompatActivity {
             }
             myCameras[CAMERA1] = new CameraService(mCameraManager, "0", mTextureView);
 
-            myCameras[CAMERA1].getFaces().observeForever(new Observer<List<FirebaseVisionFace>>() {
-                @Override
-                public void onChanged(List<FirebaseVisionFace> firebaseVisionFaces) {
-                    Log.d("DEBUG", "Feces: " + firebaseVisionFaces.size());                }
-            });
+            final FireBaseVision fireBaseVision = new FireBaseVision();
+            textView = findViewById(R.id.textView);
+           button = findViewById(R.id.button);
+           button.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   button.setEnabled(false);
+                   textView.setText("");
+                   fireBaseVision.detecting(mTextureView.getBitmap()).addOnCompleteListener(new OnCompleteListener<List<FirebaseVisionFace>>() {
+                       @Override
+                       public void onComplete(@NonNull Task<List<FirebaseVisionFace>> task) {
+                           List<FirebaseVisionFace> result = task.getResult();
+                           for (FirebaseVisionFace face : result)
+                           textView.setText(textView.getText() + "Result: " + face.getTrackingId() + " ");
+                           button.setEnabled(true);
+                       }
+                   });
+               }
+           });
 
 
         } catch (CameraAccessException e) {

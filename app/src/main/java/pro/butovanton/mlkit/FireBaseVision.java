@@ -49,7 +49,8 @@ public class FireBaseVision {
                     .setContourMode(FirebaseVisionFaceDetectorOptions.ALL_CONTOURS)
                     .build();
 
-    public LiveData<List<FirebaseVisionFace>> detecting(FirebaseVisionImage image) {
+    public Task<List<FirebaseVisionFace>> detecting(Bitmap bitmap) {
+        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
         Task<List<FirebaseVisionFace>> result = detector.detectInImage(image)
                 .addOnSuccessListener(
                         new OnSuccessListener<List<FirebaseVisionFace>>() {
@@ -67,7 +68,7 @@ public class FireBaseVision {
                                 firebaseVisionFace.setValue(null);
                             }
                         });
-        return firebaseVisionFace;
+        return result;
     }
 
     public FirebaseVisionImage imageFromBitmap(Bitmap bitmap) {
