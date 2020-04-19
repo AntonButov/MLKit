@@ -54,15 +54,13 @@ public class FireBaseVision {
                             @Override
                             public void onSuccess(List<FirebaseVisionFace> faces) {
                                 firebaseVisionFace.setValue(faces);
-
                             }
                         })
                 .addOnFailureListener(
                         new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                // Task failed with an exception
-                                // ...
+                                firebaseVisionFace.setValue(null);
                             }
                         });
         return firebaseVisionFace;

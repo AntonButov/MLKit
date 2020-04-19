@@ -20,5 +20,5 @@
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="face" />
     </application>
-
+    <uses-permission android:name="android.permission.CAMERA" />
 </manifest>
