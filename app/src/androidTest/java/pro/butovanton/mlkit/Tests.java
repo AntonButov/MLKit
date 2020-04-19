@@ -7,13 +7,17 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.Observer;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
+import com.google.firebase.ml.vision.objects.FirebaseVisionObject;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,15 +49,15 @@ public class Tests {
         Resources resources = appContext.getResources();
         Uri uri = new Uri.Builder()
                 .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                .authority(resources.getResourcePackageName(R.drawable.yaht))
-                .appendPath(resources.getResourceTypeName(R.drawable.yaht))
-                .appendPath(resources.getResourceEntryName(R.drawable.yaht))
+                .authority(resources.getResourcePackageName(R.drawable.nord))
+                .appendPath(resources.getResourceTypeName(R.drawable.nord))
+                .appendPath(resources.getResourceEntryName(R.drawable.nord))
                 .build();
         FirebaseVisionImage image = fireBaseVision.imageFromUri(appContext, uri);
-        fireBaseVision.detecting(image).observeForever(new Observer<List<FirebaseVisionFace>>() {
+        fireBaseVision.objectDetectingFromUri(image).addOnCompleteListener(new OnCompleteListener<List<FirebaseVisionObject>>() {
             @Override
-            public void onChanged(List<FirebaseVisionFace> firebaseVisionFaces) {
-                count.countDown();
+            public void onComplete(@NonNull Task<List<FirebaseVisionObject>> task) {
+           count.countDown();
             }
         });
         count.await(3, TimeUnit.MINUTES);

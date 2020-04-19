@@ -17,19 +17,25 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
+import com.google.firebase.ml.vision.objects.FirebaseVisionObject;
+import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetector;
+import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions;
 
 import java.io.IOException;
 import java.util.List;
 
 public class FireBaseVision {
-    FirebaseVisionFaceDetectorOptions highAccuracyOpts;
-    FirebaseVisionFaceDetector detector;
-    MutableLiveData<List<FirebaseVisionFace>> firebaseVisionFace = new MutableLiveData<>();
+   private FirebaseVisionFaceDetectorOptions highAccuracyOpts;
+   private FirebaseVisionFaceDetector detector;
+   private FirebaseVisionObjectDetector objectDetector;
+   private MutableLiveData<List<FirebaseVisionFace>> firebaseVisionFace = new MutableLiveData<>();
 
-    FireBaseVision() {
+   public FireBaseVision() {
     highAccuracyOpts = setHighAccuracyOptsBuild();
-    detector = FirebaseVision.getInstance()
-                .getVisionFaceDetector(highAccuracyOpts);
+ //   detector = FirebaseVision.getInstance()
+ //               .getVisionFaceDetector(highAccuracyOpts);
+    objectDetector = FirebaseVision.getInstance()
+                .getOnDeviceObjectDetector(options());
     }
 
     private FirebaseVisionFaceDetectorOptions setHighAccuracyOptsBuild() {
@@ -41,6 +47,17 @@ public class FireBaseVision {
                         .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
                         .build();
     return highAccuracyOpts;
+    }
+
+    private FirebaseVisionObjectDetectorOptions options() {
+        // High-accuracy landmark detection and face classification
+        FirebaseVisionObjectDetectorOptions options =
+                new FirebaseVisionObjectDetectorOptions.Builder()
+                        .setDetectorMode(FirebaseVisionObjectDetectorOptions.SINGLE_IMAGE_MODE)
+                        .enableMultipleObjects()
+                        .enableClassification()  // Optional
+                        .build();
+        return options;
     }
 
     // Real-time contour detection of multiple faces
@@ -85,6 +102,42 @@ public class FireBaseVision {
             e.printStackTrace();
         }
         return image;
+    }
+
+    public Task<List<FirebaseVisionObject>> objectDetecting(Bitmap bitmap) {
+        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
+        Task<List<FirebaseVisionObject>> result = objectDetector.processImage(image)
+                .addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionObject>>() {
+                    @Override
+                    public void onSuccess(List<FirebaseVisionObject> firebaseVisionObjects) {
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+        return result;
+    }
+
+    public Task<List<FirebaseVisionObject>> objectDetectingFromUri(FirebaseVisionImage image) {
+
+        Task<List<FirebaseVisionObject>> result = objectDetector.processImage(image)
+                .addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionObject>>() {
+                    @Override
+                    public void onSuccess(List<FirebaseVisionObject> firebaseVisionObjects) {
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+        return result;
     }
 }
 

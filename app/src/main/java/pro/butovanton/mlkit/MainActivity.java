@@ -28,6 +28,7 @@ import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
+import com.google.firebase.ml.vision.objects.FirebaseVisionObject;
 
 import java.util.List;
 
@@ -72,13 +73,27 @@ public class MainActivity extends AppCompatActivity {
                public void onClick(View v) {
                    button.setEnabled(false);
                    textView.setText("");
-                   fireBaseVision.detecting(mTextureView.getBitmap()).addOnCompleteListener(new OnCompleteListener<List<FirebaseVisionFace>>() {
+                   //                 fireBaseVision.detecting(mTextureView.getBitmap()).addOnCompleteListener(new OnCompleteListener<List<FirebaseVisionFace>>() {
+                   //                     @Override
+                   //                     public void onComplete(@NonNull Task<List<FirebaseVisionFace>> task) {
+                   //                         List<FirebaseVisionFace> result = task.getResult();
+                   //                         for (FirebaseVisionFace face : result)
+                   //                         textView.setText(textView.getText() + "Result: " + face.getTrackingId() + " ");
+                   ///                         button.setEnabled(true);
+                   //                     }
+                   //                 });
+                   //             }
+                   //         });
+
+                   fireBaseVision.objectDetecting(mTextureView.getBitmap()).addOnCompleteListener(new OnCompleteListener<List<FirebaseVisionObject>>() {
                        @Override
-                       public void onComplete(@NonNull Task<List<FirebaseVisionFace>> task) {
-                           List<FirebaseVisionFace> result = task.getResult();
-                           for (FirebaseVisionFace face : result)
-                           textView.setText(textView.getText() + "Result: " + face.getTrackingId() + " ");
-                           button.setEnabled(true);
+                       public void onComplete(@NonNull Task<List<FirebaseVisionObject>> task) {
+                           List<FirebaseVisionObject> result = task.getResult();
+                                                    for (FirebaseVisionObject object : result)
+                                                    textView.setText(textView.getText() + "Id: " + object.getTrackingId() +
+                                                            " Category" + object.getClassificationCategory() +
+                                                            " Confidience " + object.getClassificationConfidence()) ;
+                                                    button.setEnabled(true);
                        }
                    });
                }
