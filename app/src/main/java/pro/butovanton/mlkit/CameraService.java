@@ -14,7 +14,14 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+
+import com.google.firebase.ml.vision.face.FirebaseVisionFace;
+
 import java.util.Arrays;
+import java.util.List;
 
 public class CameraService {
     private String mCameraID;
@@ -22,11 +29,17 @@ public class CameraService {
     private CameraCaptureSession mCaptureSession;
     private CameraManager mCameraManager;
     private TextureView mTextureView;
+    private FireBaseVision fireBaseVision;
+    private enum Process { WAIT , DETECTING }
+    private Process process;
+    private MutableLiveData<List<FirebaseVisionFace>> faces = new MutableLiveData<>();
 
     public CameraService(CameraManager cameraManager, String cameraID, TextureView textureVew) {
         mCameraManager = cameraManager;
         mCameraID = cameraID;
         mTextureView = textureVew;
+        fireBaseVision = new FireBaseVision();
+        process = Process.WAIT;
     }
 
     private CameraDevice.StateCallback mCameraCallback = new CameraDevice.StateCallback() {
@@ -50,6 +63,10 @@ public class CameraService {
         }
     };
 
+    public LiveData<List<FirebaseVisionFace>> getFaces() {
+
+        return faces;
+    }
     private void createCameraPreviewSession() {
         if(mTextureView.isAvailable()) setSurface();
         else mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
@@ -70,12 +87,20 @@ public class CameraService {
 
        @Override
        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-           Log.d("DEBUG", "texture change");
+ //          Log.d("DEBUG", "texture change");
+           if (process == Process.WAIT) {
+               fireBaseVision.detecting(fireBaseVision.imageFromBitmap(mTextureView.getBitmap())).observeForever(new Observer<List<FirebaseVisionFace>>() {
+                   @Override
+                   public void onChanged(List<FirebaseVisionFace> firebaseVisionFaces) {
+                       faces.setValue(firebaseVisionFaces);
+                       process = Process.WAIT;
+                   }
+               });
+               process = Process.DETECTING;
+           }
        }
    });
-
     }
-
 
       private void setSurface() {
             Surface surface = new Surface(mTextureView.getSurfaceTexture());
@@ -127,7 +152,6 @@ public class CameraService {
     }
 
     public void closeCamera() {
-
         if (mCameraDevice != null) {
             mCameraDevice.close();
             mCameraDevice = null;

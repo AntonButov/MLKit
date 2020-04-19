@@ -53,8 +53,6 @@ public class Tests {
         fireBaseVision.detecting(image).observeForever(new Observer<List<FirebaseVisionFace>>() {
             @Override
             public void onChanged(List<FirebaseVisionFace> firebaseVisionFaces) {
-                if (firebaseVisionFaces == null) Log.d("DEBUG", "Faces not");
-                else Log.d("DEBUG", "Faces: " + firebaseVisionFaces.size());
                 count.countDown();
             }
         });

@@ -2,6 +2,7 @@ package pro.butovanton.mlkit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 
 import android.Manifest;
 import android.content.Context;
@@ -56,7 +57,11 @@ public class MainActivity extends AppCompatActivity {
             }
             myCameras[CAMERA1] = new CameraService(mCameraManager, "0", mTextureView);
 
-            myCameras[CAMERA1].
+            myCameras[CAMERA1].getFaces().observeForever(new Observer<List<FirebaseVisionFace>>() {
+                @Override
+                public void onChanged(List<FirebaseVisionFace> firebaseVisionFaces) {
+                    Log.d("DEBUG", "Feces: " + firebaseVisionFaces.size());                }
+            });
 
 
         } catch (CameraAccessException e) {

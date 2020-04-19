@@ -1,7 +1,9 @@
 package pro.butovanton.mlkit;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -53,6 +55,7 @@ public class FireBaseVision {
                         new OnSuccessListener<List<FirebaseVisionFace>>() {
                             @Override
                             public void onSuccess(List<FirebaseVisionFace> faces) {
+                                Log.d("DEBUG", "Faces: " + faces.size());
                                 firebaseVisionFace.setValue(faces);
                             }
                         })
@@ -60,10 +63,17 @@ public class FireBaseVision {
                         new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
+                                Log.d("DEBUG", "Faces not");
                                 firebaseVisionFace.setValue(null);
                             }
                         });
         return firebaseVisionFace;
+    }
+
+    public FirebaseVisionImage imageFromBitmap(Bitmap bitmap) {
+        FirebaseVisionImage image = null;
+        image = FirebaseVisionImage.fromBitmap(bitmap);
+        return image;
     }
 
     public FirebaseVisionImage imageFromUri(Context context, Uri uri) {
