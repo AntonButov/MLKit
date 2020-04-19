@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
@@ -85,17 +86,22 @@ public class MainActivity extends AppCompatActivity {
                    //             }
                    //         });
 
-                   fireBaseVision.objectDetecting(mTextureView.getBitmap()).addOnCompleteListener(new OnCompleteListener<List<FirebaseVisionObject>>() {
-                       @Override
-                       public void onComplete(@NonNull Task<List<FirebaseVisionObject>> task) {
-                           List<FirebaseVisionObject> result = task.getResult();
-                                                    for (FirebaseVisionObject object : result)
-                                                    textView.setText(textView.getText() + "Id: " + object.getTrackingId() +
-                                                            " Category" + object.getClassificationCategory() +
-                                                            " Confidience " + object.getClassificationConfidence()) ;
-                                                    button.setEnabled(true);
-                       }
-                   });
+                   fireBaseVision.objectDetecting(mTextureView.getBitmap()).addOnSuccessListener(
+                           new OnSuccessListener<List<FirebaseVisionObject>>() {
+                               @Override
+                               public void onSuccess(List<FirebaseVisionObject> detectedObjects) {
+                                   // The list of detected objects contains one item if multiple object detection wasn't enabled.
+                                   for (FirebaseVisionObject obj : detectedObjects) {
+                                       String str = "";
+                                       // Integer id = obj.getTrackingId(); null in SINGLE_IMAGE_MODE
+                                       Rect bounds = obj.getBoundingBox();
+                                       str = str + "Bounds- " + bounds + "\n" + obj.getClassificationCategory();
+
+                                           textView.setText(str + "\n");
+                                       }
+                               }
+                           });
+                          button.setEnabled(true);
                }
            });
 
