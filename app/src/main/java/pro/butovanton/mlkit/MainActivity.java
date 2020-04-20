@@ -44,20 +44,15 @@ public class MainActivity extends AppCompatActivity {
 
     private CameraManager mCameraManager = null;
     private final int CAMERA1 = 0;
-    private final int CAMERA2 = 1;
     private TextureView mTextureView = null;
     private TextView textView;
-    private Button button;
- //   final FireBaseVision fireBaseVision = new FireBaseVision();
-  //  private enum Process { WAIT , DETECTING }
-  //  private Process process = Process.WAIT;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        textView = findViewById(R.id.textView);
         mTextureView = findViewById(R.id.textureView);
 
         mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -67,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
             for (String cameraID : mCameraManager.getCameraIdList()) {
                 Log.i("DEBUG", "cameraID: " + cameraID);
                 id = Integer.parseInt(cameraID);
-                // создаем обработчик для камеры
             }
             myCameras[CAMERA1] = new CameraService(mCameraManager, "0", mTextureView);
             myCameras[CAMERA1].getRect().observe(this, new Observer<String>() {
@@ -76,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
                     textView.setText(rect);
                 }
             });
-
-            textView = findViewById(R.id.textView);
 
         } catch (CameraAccessException e) {
             Log.e("DEBUG", e.getMessage());
@@ -93,26 +85,31 @@ public class MainActivity extends AppCompatActivity {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_REQUEST_CODE_FOR_CAMERA);
             }
+            else openCamera();
         }
-        openCamera();
+        else openCamera();
     }
 
         @Override
         public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
             if (requestCode == MY_REQUEST_CODE_FOR_CAMERA) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // startCameraActivity(); // запускаем активность с камерой (ну или фрагмент)
-                    openCamera();
+                   // openCamera();
                 } else {
                     Toast toast = Toast.makeText(getApplicationContext(), "no permition camera", Toast.LENGTH_SHORT);
                     toast.show();
+                    finish();
                 }
             }
         }
 
 
     private void openCamera() {
-        myCameras[CAMERA1].openCamera(this);
+        try {
+            myCameras[CAMERA1].openCamera(this);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

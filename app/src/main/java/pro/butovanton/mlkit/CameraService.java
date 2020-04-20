@@ -68,8 +68,8 @@ public class CameraService {
 
 
     private void createCameraPreviewSession() {
-        if(mTextureView.isAvailable()) setSurface();
-        else mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+       if(mTextureView.isAvailable()) setSurface();
+       mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
        @Override
        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
            setSurface();
@@ -77,7 +77,6 @@ public class CameraService {
 
        @Override
        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
        }
 
        @Override
@@ -117,7 +116,6 @@ public class CameraService {
             try {
                 final CaptureRequest.Builder builder =
                         mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-
                 builder.addTarget(surface);
 
                 mCameraDevice.createCaptureSession(Arrays.asList(surface),
@@ -148,17 +146,12 @@ public class CameraService {
         }
     }
 
-    public void openCamera(Activity activity) {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    public void openCamera(Activity activity) throws CameraAccessException {
+           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (activity.checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     mCameraManager.openCamera(mCameraID,mCameraCallback,null);
                 }
-            }
-
-       } catch (CameraAccessException e) {
-            Log.i("LOG_TAG",e.getMessage());
-        }
+            } else mCameraManager.openCamera(mCameraID,mCameraCallback,null);
     }
 
     public void closeCamera() {
@@ -166,7 +159,6 @@ public class CameraService {
             mCameraDevice.close();
             mCameraDevice = null;
         }
-
     }
 
 }
