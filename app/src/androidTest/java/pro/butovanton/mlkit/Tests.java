@@ -14,6 +14,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
@@ -29,38 +30,46 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
-/**
- * Instrumented test, which will execute on an Android device.
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
 @RunWith(AndroidJUnit4.class)
 public class Tests {
 
-    private FireBaseVision fireBaseVision = new FireBaseVision();
     private Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Test
-    public void getImageFace() throws InterruptedException {
-        final CountDownLatch count = new CountDownLatch(1);
-        Resources resources = appContext.getResources();
-        Uri uri = new Uri.Builder()
-                .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                .authority(resources.getResourcePackageName(R.drawable.nord))
-                .appendPath(resources.getResourceTypeName(R.drawable.nord))
-                .appendPath(resources.getResourceEntryName(R.drawable.nord))
-                .build();
-        FirebaseVisionImage image = fireBaseVision.imageFromUri(appContext, uri);
-        fireBaseVision.objectDetectingFromUri(image).addOnCompleteListener(new OnCompleteListener<List<FirebaseVisionObject>>() {
-            @Override
-            public void onComplete(@NonNull Task<List<FirebaseVisionObject>> task) {
-           count.countDown();
-            }
-        });
-        count.await(3, TimeUnit.MINUTES);
+    public void nordTest() throws InterruptedException {
+        testFaces(R.drawable.nord, 1);
     }
 
+    @Test
+    public void yahtTest() throws InterruptedException {
+        testFaces(R.drawable.yaht, 0);
+    }
+
+    public void testFaces(int resurse, final int countFaces) throws InterruptedException {
+        FireBaseVision fireBaseVision = new FireBaseVision();
+        final CountDownLatch count = new CountDownLatch(1);
+        Uri uri = uriFromResurce(resurse);
+        FirebaseVisionImage image = fireBaseVision.imageFromUri(appContext, uri);
+        fireBaseVision.detecting(image).addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionFace>>() {
+            @Override
+            public void onSuccess(List<FirebaseVisionFace> firebaseVisionFaces) {
+                assertTrue(firebaseVisionFaces.size() == countFaces);
+                count.countDown();
+            }
+        });
+        count.await(1, TimeUnit.MINUTES);
+    }
+
+    private Uri uriFromResurce(int resId) {
+        Resources resources = appContext.getResources();
+        return new Uri.Builder()
+                    .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+                    .authority(resources.getResourcePackageName(resId))
+                    .appendPath(resources.getResourceTypeName(resId))
+                    .appendPath(resources.getResourceEntryName(resId))
+                    .build();
+    }
 }

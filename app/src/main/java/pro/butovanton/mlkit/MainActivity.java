@@ -7,7 +7,9 @@ import androidx.lifecycle.Observer;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.SurfaceTexture;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
@@ -46,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
     private TextureView mTextureView = null;
     private TextView textView;
     private Button button;
+ //   final FireBaseVision fireBaseVision = new FireBaseVision();
+  //  private enum Process { WAIT , DETECTING }
+  //  private Process process = Process.WAIT;
 
 
     @Override
@@ -65,46 +70,14 @@ public class MainActivity extends AppCompatActivity {
                 // создаем обработчик для камеры
             }
             myCameras[CAMERA1] = new CameraService(mCameraManager, "0", mTextureView);
+            myCameras[CAMERA1].getRect().observe(this, new Observer<String>() {
+                @Override
+                public void onChanged(String rect) {
+                    textView.setText(rect);
+                }
+            });
 
-            final FireBaseVision fireBaseVision = new FireBaseVision();
             textView = findViewById(R.id.textView);
-           button = findViewById(R.id.button);
-           button.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   button.setEnabled(false);
-                   textView.setText("");
-                   //                 fireBaseVision.detecting(mTextureView.getBitmap()).addOnCompleteListener(new OnCompleteListener<List<FirebaseVisionFace>>() {
-                   //                     @Override
-                   //                     public void onComplete(@NonNull Task<List<FirebaseVisionFace>> task) {
-                   //                         List<FirebaseVisionFace> result = task.getResult();
-                   //                         for (FirebaseVisionFace face : result)
-                   //                         textView.setText(textView.getText() + "Result: " + face.getTrackingId() + " ");
-                   ///                         button.setEnabled(true);
-                   //                     }
-                   //                 });
-                   //             }
-                   //         });
-
-                   fireBaseVision.objectDetecting(mTextureView.getBitmap()).addOnSuccessListener(
-                           new OnSuccessListener<List<FirebaseVisionObject>>() {
-                               @Override
-                               public void onSuccess(List<FirebaseVisionObject> detectedObjects) {
-                                   // The list of detected objects contains one item if multiple object detection wasn't enabled.
-                                   for (FirebaseVisionObject obj : detectedObjects) {
-                                       String str = "";
-                                       // Integer id = obj.getTrackingId(); null in SINGLE_IMAGE_MODE
-                                       Rect bounds = obj.getBoundingBox();
-                                       str = str + "Bounds- " + bounds + "\n" + obj.getClassificationCategory();
-
-                                           textView.setText(str + "\n");
-                                       }
-                               }
-                           });
-                          button.setEnabled(true);
-               }
-           });
-
 
         } catch (CameraAccessException e) {
             Log.e("DEBUG", e.getMessage());
